@@ -1,4 +1,5 @@
 import numpy as np
+import libcasm.xtal as xtal
 from typing import Optional
 from casm.project._Project import Project
 from casm.project.json_io import (
@@ -19,7 +20,12 @@ class SymCommand:
         coord: str = "frac",
     ):
         """Print the lattice point group"""
-        return None
+        lattice_point_group = [
+            op.to_dict()
+            for op in xtal.make_point_group(self.proj.prim.xtal_prim.lattice())
+        ]
+        print("Printing lattice point group: ")
+        print(xtal.pretty_json(lattice_point_group))
 
     def print_factor_group(
         self,
@@ -27,7 +33,11 @@ class SymCommand:
         coord: str = "frac",
     ):
         """Print the prim factor group"""
-        return None
+        factor_group = [
+            op.to_dict() for op in xtal.make_factor_group(self.proj.prim.xtal_prim)
+        ]
+        print("Printing factor group: ")
+        print(xtal.pretty_json(factor_group))
 
     def print_crystal_point_group(
         self,
@@ -35,7 +45,12 @@ class SymCommand:
         coord: str = "frac",
     ):
         """Print the crystal point group"""
-        return None
+        crystal_point_group = [
+            op.to_dict()
+            for op in xtal.make_crystal_point_group(self.proj.prim.xtal_prim)
+        ]
+        print("Printing crystal point group: ")
+        print(xtal.pretty_json(crystal_point_group))
 
     def dof_space_analysis(
         self,
