@@ -1,11 +1,15 @@
-import numpy as np
+import os
+
+# import numpy as np
+# import libcasm.xtal as xtal
+# import casm.project.json_io as json_io
+
 from typing import Iterable, Optional, Union
 import libcasm.configuration as casmconfig
+
 from casm.project._Project import Project
-from casm.project.json_io import (
-    read_required,
-    safe_dump,
-)
+from casm.project._ClexDescription import ClexDescription
+import casm.project.text_io as text_io
 
 
 class CalcCommand:
@@ -19,7 +23,9 @@ class CalcCommand:
         configurations: Union[
             Iterable[casmconfig.Configuration], casmconfig.ConfigurationSet
         ],
-        calctype: str,
+        clex_description: ClexDescription,
+        force_write=False,
+        id="",
     ):
         """Setup VASP calculations
 
@@ -50,13 +56,39 @@ class CalcCommand:
             with imports.
         """
         print("setup_vasp: Create VASP calculation input files")
-        return None
+
+        incar_settings_path = os.path.join(
+            self.proj.dir.calc_settings_dir(clex=clex_description), "INCAR"
+        )
+        incar = text_io.read_required(incar_settings_path)
+
+        # Setting up a vasp calculation for each of the libcasm.Configuration in configurations
+        for config in configurations:
+            # make a configname
+            config_name = os.path.join(config.supercell_name, config.configuration_id)
+
+            config_calc_dir = self.proj.dir.calctype_dir(
+                configname=config_name, clex=clex_description, calc_subdir=id
+            )
+
+            # <project>/training_data/id/config_name/calctype.calctype
+            config_calc_dir.mkdir(parents=True, exist_ok=True)
+
+            # write POSCAR
+            config_poscar_str = config.configuration.to_structure().to_poscar_str()
+            poscar_path = os.path.join(config_calc_dir, "POSCAR")
+            text_io.safe_dump(config_poscar_str, poscar_path, force=force_write)
+
+            # copy INCAR from settings calctype dir
+            incar_copy_path = os.path.join(config_calc_dir, "INCAR")
+            text_io.safe_dump(incar, incar_copy_path, force=force_write)
 
     def calc_vasp(
         self,
         id: Optional[str] = None,
     ):
         print("calc_vasp: Run VASP calculations")
+        NotImplementedError("calc_vasp method implemented yet: ", id)
         return None
 
     def report_vasp(
@@ -92,4 +124,5 @@ class CalcCommand:
             "report_vasp: "
             "Parse VASP calculation output files and convert to libcasm.xtal.Structure"
         )
+        NotImplementedError("report_vasp method implemented yet: ", id, batchfile)
         return None

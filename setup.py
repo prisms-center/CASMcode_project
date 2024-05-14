@@ -6,6 +6,6 @@ from setuptools import setup
 setup(
     name="casm-project",
     version=__version__,
-    packages=["casm", "casm.project"],
+    packages=["casm", "casm.project", "casm.project.commands"],
     install_requires=[],
 )
