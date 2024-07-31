@@ -1,7 +1,6 @@
 import pathlib
 from typing import Optional, TypeVar, Union
 
-
 import libcasm.casmglobal as casmglobal
 import libcasm.configuration as casmconfig
 import libcasm.configuration.io as config_io
