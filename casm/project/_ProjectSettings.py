@@ -256,4 +256,5 @@ class ProjectSettings(object):
             "required_properties": self.required_properties,
             "view_command": self.view_command,
             "strain_references": self.strain_references,
+            "default_strain_reference": self.default_strain_reference_name,
         }
