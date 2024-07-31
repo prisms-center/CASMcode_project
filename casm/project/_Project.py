@@ -90,19 +90,6 @@ class Project:
         components.
         """
 
-        self.strain_reference = self.prim.xtal_prim.lattice()
-        # by default set it to the lattice of the prim
-        """Reference `Lattice` (`L_{ref}`) used for computing relaxation strains
-        for `Configurations` in the project
-
-        Relaxation strain in Hencky, Green-Lagrange or any other metric of 
-        a relaxed `Configuration` with a strained `Lattice` (`L_{relaxed}`) will be 
-        computed based on the deformation tensor (`F`) w.r.t the reference `Lattice`.
-        This is defined as `L_{relaxed} = F L_{ref}`
-
-        By default it is set to the lattice of the prim
-        """
-
         if self.dir.chemical_composition_axes().exists():
             self.chemical_composition_axes = ChemicalCompositionAxes.from_dict(
                 read_optional(self.dir.chemical_composition_axes())

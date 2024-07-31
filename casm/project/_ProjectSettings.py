@@ -130,6 +130,24 @@ class ProjectSettings(object):
         from the casm view command.
         """
 
+        self.strain_references = data.get("strain_references", {})
+        """dict[str, ]: Named strain references
+        
+        The named strain references make it easier to select the choice of 
+        reference lattice used for calculating strains and to switch 
+        and compare among multiple possible choices stored in a single CASM project.
+        """
+        self.default_strain_reference_name = self._get_default_strain_reference_name(
+            data
+        )
+        """Optional[str]: Name of the default strain reference to use when not \
+        otherwise specified. 
+        
+        A key in "strain_references". If not present, `"prim_lattice"` is used. 
+        If that is also not present, then the first found is used. If None are
+        present, then it is set to None.
+        """
+
     def _get_default_clex_name(self, data):
         if "default_clex" in data:
             return data["default_clex"]
@@ -145,6 +163,16 @@ class ProjectSettings(object):
         if clexname is None:
             return None
         return ClexDescription(**data["cluster_expansions"][clexname])
+
+    def _get_default_strain_reference_name(self, data):
+        if "default_strain_reference_name" in data:
+            return data["default_strain_reference_name"]
+        elif "prim_lattice" in data["strain_references"]:
+            return "prim_lattice"
+        else:
+            for key, _ in data["strain_references"].items():
+                return key
+        return None
 
     @staticmethod
     def make_default(
@@ -200,6 +228,14 @@ class ProjectSettings(object):
             "query_alias": {},
             "required_properties": {"Configuration": {"default": ["energy"]}},
             "view_command": "",
+            "strain_references": {
+                "prim_lattice": {
+                    "lattice_vectors": xtal_prim.lattice()
+                    .column_vector_matrix()
+                    .T.tolist()  # note the transpose. Each row will be one lattice vector
+                }
+            },
+            "default_strain_reference": "prim_lattice",
         }
         return ProjectSettings(data=data)
 
@@ -219,4 +255,5 @@ class ProjectSettings(object):
             "query_alias": self.query_alias,
             "required_properties": self.required_properties,
             "view_command": self.view_command,
+            "strain_references": self.strain_references,
         }
