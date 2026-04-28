@@ -1,4 +1,4 @@
 build
 pip
-setuptools>=42
+setuptools>=82.0.1
 wheel
