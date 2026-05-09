@@ -734,7 +734,7 @@ class ConfigSelectionRecord:
         """
         calc_dir = self.calc_dir
         if calc_dir is None:
-            return False
+            return None
 
         structure_file = calc_dir / "structure_with_properties.json"
         if not structure_file.exists():
@@ -1314,7 +1314,7 @@ class ConfigSelection:
         """
         record = self.get(name)
         if record is not None:
-            record.selected = True
+            record.set_selected(True)
         else:
             raise ValueError(f"Configuration '{name}' not found in selection.")
 
@@ -1371,7 +1371,7 @@ class ConfigSelection:
         """
         record = self.get(name)
         if record is not None:
-            record.selected = False
+            record.set_selected(False)
         else:
             raise ValueError(f"Configuration '{name}' not found in selection.")
 
