@@ -540,16 +540,16 @@ class DirectoryStructure:
     #     return self.__all_settings("ref", self.calc_settings_dir(calctype))
 
     def all_import(self):
-        return self.__all_settings("import", self.__import_dir)
+        return self.__all_settings("import", self.path / self.__import_dir)
 
     def all_fit(self):
-        return self.__all_settings("fit", self.__fit_dir)
+        return self.__all_settings("fit", self.path / self.__fit_dir)
 
     def all_system(self):
-        return self.__all_settings("system", self.__system_dir)
+        return self.__all_settings("system", self.path / self.__system_dir)
 
     def all_plottype(self):
-        return self.__all_settings("plottype", self.__plot_settings_dir)
+        return self.__all_settings("plottype", self.path / self.__plot_settings_dir)
 
     # ** File and Directory paths **
 
@@ -783,7 +783,7 @@ class DirectoryStructure:
 
     def chemical_reference(self, clex: ClexDescription, calctype: str, ref: str):
         """Return chemical reference file path"""
-        return self.ref_dir(clex=clex, calctype=calctype) / "chemical_reference.json"
+        return self.ref_dir(clex=clex, calctype=calctype, ref=ref) / "chemical_reference.json"
 
     # -- Enumerations --------
 
