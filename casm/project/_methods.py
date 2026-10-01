@@ -291,7 +291,9 @@ def make_symmetrized_prim(
     # Apply each op in `factor_group_at_tol`
     n_ops = len(factor_group_at_tol.elements)
     for op in factor_group_at_tol.elements:
-        transformed_coord_cart = op.matrix() @ init_coord_cart
+        transformed_coord_cart = (
+            op.matrix() @ init_coord_cart + op.translation().reshape(3, 1)
+        )
 
         # for each coord in transformed_coord_cart,
         # find index of closest site in init_coord_cart
@@ -449,7 +451,7 @@ class PrimToleranceSensitivity:
             if tol_lower > lower_range:
                 msg += (
                     f"- At tol={pow(base,tol_lower)} "
-                    f"lattice point group size = {value_upper}\n"
+                    f"lattice point group size = {value_lower}\n"
                 )
 
             self.lattice_point_group_size_sensitivity_msg = msg
@@ -490,7 +492,7 @@ class PrimToleranceSensitivity:
             if tol_lower > lower_range:
                 msg += (
                     f"- At tol={pow(base,tol_lower)} "
-                    f"factor group size = {value_upper}\n"
+                    f"factor group size = {value_lower}\n"
                 )
 
             self.factor_group_size_sensitivity_msg = msg
