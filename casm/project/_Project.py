@@ -328,6 +328,19 @@ You will need to:
         This constructs a CASM project at the specified path and returns a
         :class:`~casm.project.Project` instance representing the project.
 
+        Notes
+        -----
+
+        Initializing a project checks that the input prim is primitive,
+        right-handed, in canonical form, and not sensitive to the crystallography
+        tolerance. These can be overridden with `force=True`. If the checks fail,
+        suggested prims are written to the project root. See
+        :func:`~casm.project.make_symmetrized_prim`,
+        :func:`~libcasm.xtal.make_canonical_prim`, and
+        :func:`~libcasm.xtal.make_primitive_prim` for more information.
+        `crystallography_tol` is only used when `prim` is read from a dictionary or
+        JSON.
+
         Parameters
         ----------
         path: Union[str, pathlib.Path, None] = None

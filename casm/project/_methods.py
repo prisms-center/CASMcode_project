@@ -265,6 +265,27 @@ def make_symmetrized_prim(
     prim: Union[xtal.Prim, casmconfig.Prim],
     tol: float,
 ) -> casmconfig.Prim:
+    """Returns a prim symmetrized with tolerance `tol`
+
+    The lattice is symmetrized to the lattice point group, then each basis site is
+    replaced by the average of its symmetrically equivalent positions under the
+    factor group. The result is not made primitive, canonical, or right-handed. See
+    :func:`~libcasm.xtal.make_canonical_prim` and
+    :func:`~libcasm.xtal.make_primitive_prim` for more information on making a prim
+    canonical or primitive.
+
+    Parameters
+    ----------
+    prim: Union[libcasm.xtal.Prim, libcasm.configuration.Prim]
+        The initial prim.
+    tol: float
+        The tolerance used to find the lattice point group and factor group.
+
+    Returns
+    -------
+    symmetrized_prim: libcasm.configuration.Prim
+        The symmetrized prim.
+    """
     xtal_prim_init = _as_xtal_prim(prim=prim)
     init_tol = xtal_prim_init.lattice().tol()
 
