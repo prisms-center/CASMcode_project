@@ -29,7 +29,7 @@ class FitCommand:
             fitting_data = self.get(id)
             print(fitting_data)
 
-    def get(self, id: str):
+    def get(self, id: str, use_npz: bool = False):
         """Load fitting data
 
         This constructs an :class:`~casm.project.fit.FittingData`
@@ -42,13 +42,16 @@ class FitCommand:
         ----------
         id : str
             The fit identifier
+        use_npz : bool, optional
+            If True, prefer loading from fitting_data.npz over fitting_data.json.
+            If False (default), load from fitting_data.json only.
 
         Returns
         -------
         fitting_data: FittingData
             The fitting data
         """
-        return FittingData(proj=self.proj, id=id)
+        return FittingData(proj=self.proj, id=id, use_npz=use_npz)
 
     def remove(self, id: str):
         """Remove fitting data
