@@ -265,6 +265,27 @@ def make_symmetrized_prim(
     prim: Union[xtal.Prim, casmconfig.Prim],
     tol: float,
 ) -> casmconfig.Prim:
+    """Returns a prim symmetrized with tolerance `tol`
+
+    The lattice is symmetrized to the lattice point group, then each basis site is
+    replaced by the average of its symmetrically equivalent positions under the
+    factor group. The result is not made primitive, canonical, or right-handed. See
+    :func:`~libcasm.xtal.make_canonical_prim` and
+    :func:`~libcasm.xtal.make_primitive_prim` for more information on making a prim
+    canonical or primitive.
+
+    Parameters
+    ----------
+    prim: Union[libcasm.xtal.Prim, libcasm.configuration.Prim]
+        The initial prim.
+    tol: float
+        The tolerance used to find the lattice point group and factor group.
+
+    Returns
+    -------
+    symmetrized_prim: libcasm.configuration.Prim
+        The symmetrized prim.
+    """
     xtal_prim_init = _as_xtal_prim(prim=prim)
     init_tol = xtal_prim_init.lattice().tol()
 
@@ -291,7 +312,9 @@ def make_symmetrized_prim(
     # Apply each op in `factor_group_at_tol`
     n_ops = len(factor_group_at_tol.elements)
     for op in factor_group_at_tol.elements:
-        transformed_coord_cart = op.matrix() @ init_coord_cart
+        transformed_coord_cart = (
+            op.matrix() @ init_coord_cart + op.translation().reshape(3, 1)
+        )
 
         # for each coord in transformed_coord_cart,
         # find index of closest site in init_coord_cart
@@ -449,7 +472,7 @@ class PrimToleranceSensitivity:
             if tol_lower > lower_range:
                 msg += (
                     f"- At tol={pow(base,tol_lower)} "
-                    f"lattice point group size = {value_upper}\n"
+                    f"lattice point group size = {value_lower}\n"
                 )
 
             self.lattice_point_group_size_sensitivity_msg = msg
@@ -490,7 +513,7 @@ class PrimToleranceSensitivity:
             if tol_lower > lower_range:
                 msg += (
                     f"- At tol={pow(base,tol_lower)} "
-                    f"factor group size = {value_upper}\n"
+                    f"factor group size = {value_lower}\n"
                 )
 
             self.factor_group_size_sensitivity_msg = msg
