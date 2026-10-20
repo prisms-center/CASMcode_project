@@ -16,6 +16,7 @@ class DisplayBasisOptions:
         basis_site_index: Optional[int] = None,
         print_cluster_info: bool = False,
         site_coordinate_mode: str = "integral",
+        multiple: bool = True,
     ):
         """
 
@@ -66,6 +67,10 @@ class DisplayBasisOptions:
             - 'cart': Use Cartesian coordinates
             - 'frac': Use fractional coordinates, with respect to the Prim lattice
               vectors
+        multiple: bool = True
+            If True, display all functions together in one `{align}` environment.
+            If False, display each function in its own `{align}` environment,
+            as a separate output. Set False if math output is too large to display.
 
         """
         self.linear_function_indices = linear_function_indices
@@ -123,6 +128,12 @@ class DisplayBasisOptions:
         - 'frac': Use fractional coordinates, with respect to the Prim lattice
           vectors
         """
+
+        self.multiple = multiple
+        """bool: If True, display all functions together in one `{align}`
+        environment. If False, display each function in its own `{align}`
+        environment, as a separate output. Set False if math output is too
+        large to display."""
 
 
 def display_orbits(
@@ -375,7 +386,6 @@ def enforce_max_terms_per_line(
 
 def display_functions_v2(
     variables: dict,
-    prim: casmconfig.Prim,
     options: Optional[DisplayBasisOptions] = None,
 ):
     from IPython.display import Latex, display
@@ -383,11 +393,11 @@ def display_functions_v2(
     if options is None:
         options = DisplayBasisOptions()
 
-    # Display multiple functions in one {flalign} environment
-    multiple = True
-
-    if multiple:
-        s = R"\begin{flalign}" + "\n"
+    # Display multiple functions in one {align} environment
+    # KaTeX (e.g. VS Code) does not support {flalign}
+    s = ""
+    if options.multiple:
+        s = R"\begin{align}" + "\n"
 
     bfuncs = None
     is_site_functions = False
@@ -409,6 +419,7 @@ def display_functions_v2(
                 "the basis_site_index must be specified"
             )
 
+    display_index = 1 # to number displayed functions starting from (1)
     first = True
     for data in bfuncs:
         linear_function_index = data["linear_function_index"]
@@ -449,7 +460,7 @@ def display_functions_v2(
         if latex_formula is None:
             continue
 
-        if multiple and not first:
+        if options.multiple and not first:
             s += R"\\" + "\n"
 
         s += (
@@ -460,15 +471,23 @@ def display_functions_v2(
                 latex_formula=latex_formula,
                 max_terms_per_line=options.max_terms_per_line,
             )
+            + R"\tag{"
+            + str(display_index)
+            + "}"
         )
+        display_index += 1
 
         first = False
 
-        if not multiple:
-            display(Latex(R"\begin{flalign}" + s + R"& \end{flalign}"))
+        if not options.multiple:
+            try:
+                display(Latex(R"\begin{align}" + s + R"& \end{align}"))
+            except Exception:
+                print("too much math")
+            s = ""
 
-    if multiple:
-        s += "\n" + R"\end{flalign}"
+    if options.multiple:
+        s += "\n" + R"\end{align}"
         try:
             display(Latex(s))
         except Exception:

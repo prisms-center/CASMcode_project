@@ -1062,6 +1062,7 @@ class BsetData:
         basis_site_index: Optional[int] = None,
         print_cluster_info: bool = False,
         site_coordinate_mode: str = "integral",
+        multiple: bool = True,
     ):
         """Display cluster function formulas using IPython.display
 
@@ -1110,7 +1111,10 @@ class BsetData:
             - 'cart': Use Cartesian coordinates
             - 'frac': Use fractional coordinates, with respect to the Prim lattice
               vectors
-
+        multiple: bool = True
+            If True, display all functions together in one `{align}` environment.
+            If False, display each function in its own `{align}` environment,
+            as a separate output. Set False if math output is too large to display.
 
         """
         variables = self.out.variables
@@ -1128,10 +1132,9 @@ class BsetData:
         options.basis_site_index = basis_site_index
         options.print_cluster_info = print_cluster_info
         options.site_coordinate_mode = site_coordinate_mode
+        options.multiple = multiple
 
         display_functions_v2(
-            # basis_dict=basis_dict,
             variables=variables,
-            prim=self.proj.prim,
             options=options,
         )
